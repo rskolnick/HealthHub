@@ -5,17 +5,21 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 import {
 	Form,
 	FormControl,
 	FormDescription,
 	FormField,
+	FormItem,
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 const formSchema = z.object({
 	title: z.string().min(1, {
@@ -24,6 +28,8 @@ const formSchema = z.object({
 });
 
 const CreatePage = () => {
+	const router = useRouter();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -33,18 +39,64 @@ const CreatePage = () => {
 
 	const { isSubmitting, isValid } = form.formState;
 
-	const onSubmit = (values: z.infer<typeof formSchema>) => {
-		console.log(values);
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		try {
+			const response = await axios.post("/api/course", values);
+			router.push(`/teacher/course/${response.data.id}`);
+		} catch (error) {
+			toast.error("Something went wrong");
+		}
 	};
 
 	return (
 		<div className='max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6'>
 			<div>
 				<h1 className='text-2xl'>Name Your Course</h1>
-				<p>
-					What would you like to name your course? Don't worry, you
-					can change this later.
+				<p className='text-sm text-slate-600'>
+					What would you like to name your course? Don&apos;t worry,
+					you can change this later.
 				</p>
+				<Form {...form}>
+					<form
+						className='space-y-8 mt-8'
+						onSubmit={form.handleSubmit(onSubmit)}
+					>
+						<FormField
+							control={form.control}
+							name='title'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Course Title</FormLabel>
+									<FormControl>
+										<Input
+											disabled={isSubmitting}
+											placeholder="e.g. 'Beginner Calisthenics Training'"
+											{...field}
+										/>
+									</FormControl>
+									<FormDescription>
+										What will you teach in this course?
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<div className='flex items-center gap-x-2'>
+							<Link href='/'>
+								<Button type='button' variant='ghost'>
+									Cancel
+								</Button>
+							</Link>
+							<Button
+								type='submit'
+								className='bg-sky-700'
+								disabled={!isValid || isSubmitting}
+							>
+								Continue
+							</Button>
+						</div>
+					</form>
+				</Form>
 			</div>
 		</div>
 	);
