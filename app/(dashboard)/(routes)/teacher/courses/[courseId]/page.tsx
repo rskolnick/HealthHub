@@ -1,12 +1,13 @@
 import { IconBadge } from "@/components/icon-badge";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs";
-import { LayoutDashboard } from "lucide-react";
+import { CircleDollarSign, LayoutDashboard, ListChecks } from "lucide-react";
 import { redirect } from "next/navigation";
 import { TitleForm } from "./_components/title-form";
 import { DescriptionForm } from "./_components/description-form";
 import { ImageForm } from "./_components/image-form";
 import { CategoryForm } from "./_components/category-form";
+import { PriceForm } from "./_components/price-form";
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
 	const { userId } = auth();
@@ -57,7 +58,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
 				<div>
 					<div className='flex items-center gap-x-2'>
 						<IconBadge icon={LayoutDashboard} />
-						<h2 className='text-xl'>Customize Your Course</h2>
+						<h2 className='text-xl pl-2'>Customize Your Course</h2>
 					</div>
 					<TitleForm initialData={course} courseId={course.id} />
 					<DescriptionForm
@@ -73,6 +74,25 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
 							value: category.id,
 						}))}
 					/>
+				</div>
+				<div className='space-y-6 border-t-slate-300 border-t-2 md:border-none pt-4 md:pt-0'>
+					<div>
+						<div className='flex items-center gap-x-2'>
+							<IconBadge icon={ListChecks} />
+							<h2 className='text-xl pl-2'>Course Chapters</h2>
+						</div>
+						<div>TODO: Chapters</div>
+					</div>
+					<div className='border-t-slate-300 border-t-2 pt-4'>
+						<div className='flex items-center gap-x-2'>
+							<IconBadge icon={CircleDollarSign} />
+							<h2 className='text-xl pl-2'>Sell Your Course</h2>
+						</div>
+						<PriceForm
+							initialData={course}
+							courseId={course.id}
+						/>
+					</div>
 				</div>
 			</div>
 		</div>
